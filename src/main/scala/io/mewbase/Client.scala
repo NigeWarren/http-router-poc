@@ -7,19 +7,21 @@ import akka.http.scaladsl.model.HttpMethods._
 import akka.stream.ActorMaterializer
 
 
-object Client extends App {
+object Client extends App with Port {
 
   implicit val system = ActorSystem("client")
   import system.dispatcher
-
   implicit val materializer = ActorMaterializer()
 
-  val ping = s"http://localhost:8200/publish/bbc7"
-  val subs1 = s"http://localhost:8200/subscribe/bbc1"
-  val subs2 = s"http://localhost:8200/subscribe/bbc2"
-  val unsubs1 = s"http://localhost:8200/unsubscribe/bbc1"
+  println(s"Client using port number $getPortNumber")
+
+  val ping = s"http://localhost:$getPortNumber/publish/bbc7"
+  val subs1 = s"http://localhost:$getPortNumber/subscribe/bbc1"
+  val subs2 = s"http://localhost:$getPortNumber/subscribe/bbc2"
+  val unsubs1 = s"http://localhost:$getPortNumber/unsubscribe/bbc1"
 
   val entity  = """{ "name" : "Fred" }"""
+
 
   val publishRequest = Http().singleRequest(HttpRequest(POST, ping, entity = entity)).map { response =>
     println(response.entity.toString)
@@ -37,7 +39,6 @@ object Client extends App {
     }
 
   Thread.sleep(2500)
-
 
 
   val sub2F = Http().singleRequest(HttpRequest(POST,  subs2)).flatMap { response =>

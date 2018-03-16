@@ -17,7 +17,8 @@ import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
 
-object Server extends App  {
+object Server extends App with Port
+{
 
   implicit val system = ActorSystem("server")
   implicit val materializer = ActorMaterializer()
@@ -107,9 +108,9 @@ object Server extends App  {
 
   val allRoutes =  { pingRoute ~ publishRoute ~ subscribeRoute }
 
-  val serverSource = Http().bindAndHandle(allRoutes, interface = "localhost", port = 8200)
+  val serverSource = Http().bindAndHandle(allRoutes, interface = "localhost", getPortNumber)
 
-  println ("Server Started : 8200")
+  println (s"Server Started on port $getPortNumber")
 
 }
 
