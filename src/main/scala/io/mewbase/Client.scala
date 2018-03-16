@@ -13,12 +13,12 @@ object Client extends App with Port {
   import system.dispatcher
   implicit val materializer = ActorMaterializer()
 
-  println(s"Client using port number $getPortNumber")
+  println(s"Client using $getHostName:$getPortNumber")
 
-  val ping = s"http://localhost:$getPortNumber/publish/bbc7"
-  val subs1 = s"http://localhost:$getPortNumber/subscribe/bbc1"
-  val subs2 = s"http://localhost:$getPortNumber/subscribe/bbc2"
-  val unsubs1 = s"http://localhost:$getPortNumber/unsubscribe/bbc1"
+  val ping = s"http://$getHostName:$getPortNumber/publish/bbc7"
+  val subs1 = s"http://$getHostName:$getPortNumber/subscribe/bbc1"
+  val subs2 = s"http://$getHostName:$getPortNumber/subscribe/bbc2"
+  val unsubs1 = s"http://$getHostName:$getPortNumber/unsubscribe/bbc1"
 
   val entity  = """{ "name" : "Fred" }"""
 

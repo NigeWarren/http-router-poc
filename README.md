@@ -17,33 +17,42 @@ https://github.com/NigeWarren/http-router-poc/blob/master/target/scala-2.12/http
 ### Building 
 
 If you want to create a runnable jar from the command line (it will be necessary to install sbt if not 
-already installed on your machine.) ... 
+already installed on your machine.)
 
 `$> sbt assembly`
 
 This will pack all the source code and dependencies into a jar file named  http-router-POC-assembly-X.X.X.jar see the 
 output from the 'sbt assembly' command for the location of the file.
 
-### Running 
 
-To run the server on a machine on which a [JDK]( http://www.oracle.com/technetwork/java/javase/downloads/index.html ) is installed type ...
+### Running The Server
 
-`$> java -cp {path to jar}/http-router-POC-assembly-0.0.1.jar io.mewbase.Server`
+To run the server you will need a [JDK]( http://www.oracle.com/technetwork/java/javase/downloads/index.html ) installed.
 
-This will output :
+As an example to start the serve on port 32080 type
 
-`Server Started : 8200`
+`$> java -Dmewbase.port=32080 -cp {path to jar}/http-router-POC-assembly-0.0.1.jar io.mewbase.Server`
 
-It is possible to ping the server with an HTTP GET command from any browser or client eg typing
+This will output
 
-`http://localhost:8200/ping`
+`Server Started on port 32080`
+
+It is possible to ping the server with an HTTP GET command from any browser or client - e.g.
+
+`http://localhost:32080/ping`
 
 In a browser local to the server will result in the 'pong' text being displayed.
 
-The jar also contains a test client that can be run to test publish and subscribe protocols to the server - example
+If you dont specify a port the systems properties the server will start on 8080 by default.
 
-`java -cp ./http-router-POC-assembly-0.0.1.jar io.mewbase.Client`
 
-Will produce output reflecting replies from the server for various calls and the server will report publish 
+### Running The Client
+
+The jar also contains a test client that can be run to test publish and subscribe protocols to the server - e.g.
+
+`java -Dmewbase.host=127.0.0.1 -Dmewbase.port=32080 -cp ./http-router-POC-assembly-0.0.1.jar io.mewbase.Client`
+
+Will start the test client which tries to connect to the server on the given host and port. If it connects
+this will produce output reflecting replies from the server for various calls and the server will report publish
 and subscribe details.
 
