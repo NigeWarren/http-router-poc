@@ -50,7 +50,7 @@ If you dont specify a port the systems properties the server will start on 8080 
 
 The jar also contains a test client that can be run to test publish and subscribe protocols to the server - e.g.
 
-`java -Dmewbase.host=127.0.0.1 -Dmewbase.port=32080 -cp ./http-router-POC-assembly-0.0.1.jar io.mewbase.Client`
+`$> java -Dmewbase.host=127.0.0.1 -Dmewbase.port=32080 -cp ./http-router-POC-assembly-0.0.1.jar io.mewbase.Client`
 
 Will start the test client which tries to connect to the server on the given host and port. If it connects
 this will produce output reflecting replies from the server for various calls and the server will report publish
