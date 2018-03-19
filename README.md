@@ -27,7 +27,7 @@ output from the 'sbt assembly' command for the location of the file.
 
 ### Running The Server
 
-To run the server you will need a [JDK]( http://www.oracle.com/technetwork/java/javase/downloads/index.html ) installed.
+To run the server you will need a [JDK]( http://www.oracle.com/technetwork/java/javase/downloads/index.html ) (version 8 or higher) installed.
 
 As an example to start the serve on port 32080 type
 
