@@ -1,5 +1,7 @@
 package io.mewbase
 
+import java.util.concurrent.{CompletableFuture, Future}
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, Uri}
@@ -18,7 +20,7 @@ object Client extends App with Port {
   val ping = s"http://$getHostName:$getPortNumber/publish/bbc7"
   val subs1 = s"http://$getHostName:$getPortNumber/subscribe/bbc1"
   val subs2 = s"http://$getHostName:$getPortNumber/subscribe/bbc2"
-  val unsubs1 = s"http://$getHostName:$getPortNumber/unsubscribe/bbc1"
+
 
   val entity  = """{ "name" : "Fred" }"""
 
@@ -27,8 +29,11 @@ object Client extends App with Port {
     println(response.entity.toString)
   }
 
+  var chunkOne : CompletableFuture[String] = new CompletableFuture()
+
   val sub1F = Http().singleRequest(HttpRequest(POST,  subs1)).flatMap { response =>
     response.entity.dataBytes.runForeach { chunk =>
+      if (!chunkOne.isDone()) chunkOne.complete(chunk.utf8String)
       println(chunk.utf8String)
     }
   }
@@ -47,5 +52,14 @@ object Client extends App with Port {
     }
   }
 
+  Thread.sleep(2500)
+
+  val subsId = chunkOne.get().split(":")(2)
+  val unsubs1 = s"http://$getHostName:$getPortNumber/unsubscribe/"+ subsId
+  val unsub = Http().singleRequest(HttpRequest(POST,  unsubs1)).flatMap { response =>
+    response.entity.dataBytes.runForeach { chunk =>
+      println(chunk.utf8String)
+    }
+  }
 
 }
