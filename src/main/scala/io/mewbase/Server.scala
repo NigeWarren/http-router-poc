@@ -12,7 +12,6 @@ import akka.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives.{entity, _}
-import akka.stream.actor.{ActorPublisher, ActorPublisherMessage}
 import akka.stream.stage.{GraphStage, GraphStageLogic, OutHandler}
 
 import scala.collection.mutable
@@ -119,7 +118,7 @@ object Server extends App with Port
 
   val allRoutes =  { pingRoute ~ publishRoute ~ subscribeRoute ~ unsubscribeRoute }
 
-  val serverSource = Http().bindAndHandle(allRoutes, interface = "localhost", getPortNumber)
+  val serverSource = Http().bindAndHandle(allRoutes, interface = "0.0.0.0", getPortNumber)
 
   println (s"Server Started on port $getPortNumber")
 

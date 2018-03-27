@@ -1,6 +1,6 @@
 package io.mewbase
 
-import java.util.concurrent.{CompletableFuture, Future}
+import java.util.concurrent.CompletableFuture
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
