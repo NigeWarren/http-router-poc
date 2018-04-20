@@ -9,7 +9,7 @@ import akka.stream._
 import akka.stream.scaladsl.{Sink, Source, SourceQueueWithComplete}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpEntity.ChunkStreamPart
-import akka.http.scaladsl.model.HttpMethods._
+
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives.{entity, _}
 import akka.stream.stage.{GraphStage, GraphStageLogic, OutHandler}
