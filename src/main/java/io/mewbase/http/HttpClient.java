@@ -14,9 +14,9 @@ public class HttpClient {
 
         HttpEventSource source = new HttpEventSource(hostname,port);
         HttpEventSubscription subs = source.subscribe("channel1");
-
+        System.out.println("Set up Event Subscription on Websocket");
         Thread.sleep(10 * 1000);
-
+        System.out.println("Closing Websocket subscription");
         subs.close();
         sink.close();
     }

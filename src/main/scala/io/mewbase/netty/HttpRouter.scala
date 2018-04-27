@@ -38,9 +38,9 @@ object HttpRouter extends App {
  class LocalChannelInitializer extends ChannelInitializer[SocketChannel] {
    override def initChannel(ch: SocketChannel): Unit = {
      val p = ch.pipeline()
-     p.addLast("encoder", new HttpResponseEncoder())
-     p.addLast("decoder", new HttpRequestDecoder())
+     p.addLast("decoder", new HttpRequestDecoder(4096, 8192, 8192, false))
      p.addLast("aggregator", new HttpObjectAggregator(65536))
+     p.addLast("encoder", new HttpResponseEncoder())
      p.addLast("handler", new HttpEventRouterHandler())
    }
  }

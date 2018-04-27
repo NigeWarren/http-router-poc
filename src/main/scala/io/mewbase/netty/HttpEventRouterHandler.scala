@@ -4,11 +4,13 @@ import java.util.UUID
 import java.util.concurrent.Executors
 
 import io.netty.buffer.Unpooled
-import io.netty.channel.{Channel, ChannelFutureListener, ChannelHandlerContext, SimpleChannelInboundHandler}
+import io.netty.channel._
 import io.netty.handler.codec.http._
 import io.netty.handler.codec.http.websocketx._
 import io.netty.util.CharsetUtil
 import org.slf4j.LoggerFactory
+
+import scala.collection.mutable
 
 
 case class HttpEventRouterHandler() extends SimpleChannelInboundHandler[AnyRef] {
@@ -16,7 +18,7 @@ case class HttpEventRouterHandler() extends SimpleChannelInboundHandler[AnyRef] 
 
     private val logger = LoggerFactory.getLogger(classOf[HttpEventRouterHandler])
 
-    protected var handshaker: WebSocketServerHandshaker = null
+    val generators : mutable.Map[Channel, EventGenerator] = mutable.Map[Channel, EventGenerator]()
 
 
     @Override
@@ -55,8 +57,13 @@ case class HttpEventRouterHandler() extends SimpleChannelInboundHandler[AnyRef] 
               }  else {
                 logger.debug("Handshaker is upgrading socket")
                 handshaker.handshake(ctx.channel, req)
+                logger.debug("Upgrading Handlers to Web Sockets Frame Handlers")
+                //val p = ctx.channel().pipeline()
+                //p.remove("aggregator");
+                //p.replace("decoder", "wsdecoder", new WebSocket13FrameDecoder());
+                //p.replace("encoder", "wsencoder", new WebSocket13FrameEncoder());
               }
-              EventGenerator(ctx.channel)
+              generators.put(ctx.channel, EventGenerator(ctx.channel, handshaker))
             }
 
             error(ctx, HttpResponseStatus.BAD_REQUEST)
@@ -92,7 +99,13 @@ case class HttpEventRouterHandler() extends SimpleChannelInboundHandler[AnyRef] 
     logger.debug("Received incoming ws frame [{}]", frame.getClass.getName)
 
     frame match {
-      case closeFrame: CloseWebSocketFrame => handshaker.close(ctx.channel, frame.retain().asInstanceOf[CloseWebSocketFrame])
+      case closeFrame: CloseWebSocketFrame => {
+        logger.debug("Close frame received on WebSocket");
+        generators.get(ctx.channel).map { generator =>
+          generator.handshaker.close(ctx.channel, frame.retain().asInstanceOf[CloseWebSocketFrame])
+        }
+        generators.remove(ctx.channel)
+      }
       case  _ => logger.error("Received non closing web socket frame from client")
     }
   }
@@ -119,7 +132,7 @@ case class HttpEventRouterHandler() extends SimpleChannelInboundHandler[AnyRef] 
   }
 
 
-  case class EventGenerator(val channel : Channel ) {
+  case class EventGenerator(val channel : Channel, val handshaker: WebSocketServerHandshaker) {
 
     Executors.newSingleThreadExecutor().submit( new Runnable {
 

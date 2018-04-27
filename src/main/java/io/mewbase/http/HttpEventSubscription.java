@@ -2,7 +2,6 @@ package io.mewbase.http;
 
 
 import io.vertx.core.Handler;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.WebSocket;
 import org.slf4j.Logger;
@@ -23,7 +22,6 @@ public class HttpEventSubscription  {
 
         this.client = httpClient;
 
-
         client.post("/"+HttpEventSource.subscribeRoute, response  -> {
                 response.bodyHandler(totalBuffer -> {
                         try {
@@ -32,26 +30,24 @@ public class HttpEventSubscription  {
                             client.websocket("/"+subscriptionURI, new Handler<WebSocket>() {
                                 @Override
                                 public void handle(WebSocket websocket) {
-                                    websocket.handler(data -> {
-                                            System.out.println("Received " + data);
+                                    websocket.frameHandler(frame -> {
+                                            System.out.println("Received " + frame.textData());
                                     });
                                 }
                             });
 
 //                                ws.frameHandler( frame -> {
-//                                   System.out.println("BOOM " + frame.textData());
+//                                   System.out.println("Frame is :" + frame.textData());
 //                                });
 //                            });
                         } catch (Exception exp) {
-                            logger.error("Event delivery failed", exp);
+                            logger.error("Websocket failed", exp);
                         }
                     });
-
 
                 }
         ).end(subsRequest.toString());
     }
-
 
 
     public void close()  {
