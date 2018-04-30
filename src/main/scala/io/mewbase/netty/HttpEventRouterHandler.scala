@@ -34,10 +34,9 @@ case class HttpEventRouterHandler() extends SimpleChannelInboundHandler[AnyRef] 
 
 
   @throws[Exception]
-  def handleHttpRequest(ctx: ChannelHandlerContext, req: FullHttpRequest): Unit = { // Handle a bad request.
+  def handleHttpRequest(ctx: ChannelHandlerContext, req: FullHttpRequest): Unit = {
 
-    // If you're going to do normal HTTP POST authentication before upgrading the
-    // WebSocket, the recommendation is to handle it right here
+
     req.method match {
 
       case HttpMethod.GET => {
@@ -58,20 +57,19 @@ case class HttpEventRouterHandler() extends SimpleChannelInboundHandler[AnyRef] 
                 logger.debug("Handshaker is upgrading socket")
                 handshaker.handshake(ctx.channel, req)
                 logger.debug("Upgrading Handlers to Web Sockets Frame Handlers")
-                //val p = ctx.channel().pipeline()
-                //p.remove("aggregator");
-                //p.replace("decoder", "wsdecoder", new WebSocket13FrameDecoder());
-                //p.replace("encoder", "wsencoder", new WebSocket13FrameEncoder());
               }
               generators.put(ctx.channel, EventGenerator(ctx.channel, handshaker))
+            } else {
+              // or its just a random Get request that we dont handle
+              error(ctx, HttpResponseStatus.BAD_REQUEST)
             }
-
-            error(ctx, HttpResponseStatus.BAD_REQUEST)
           }
         }
-
       }
 
+
+      // If you're going to do normal HTTP POST authentication before upgrading the
+      // WebSocket, the recommendation is to handle it  here
       case HttpMethod.POST => {
         req.uri match {
           case "/publish" => {
@@ -90,7 +88,6 @@ case class HttpEventRouterHandler() extends SimpleChannelInboundHandler[AnyRef] 
 
       case _  => error(ctx, HttpResponseStatus.METHOD_NOT_ALLOWED)
     }
-
 
   }
 
@@ -138,12 +135,11 @@ case class HttpEventRouterHandler() extends SimpleChannelInboundHandler[AnyRef] 
 
       override def run(): Unit = {
         var counter = 0
-        logger.debug("In Event Generator")
+        logger.debug("Event Generator Starter")
         while (channel.isActive) {
-          logger.debug("In Event Generator loop " + channel.toString)
-          counter += 1
           channel.writeAndFlush(new TextWebSocketFrame("Message :"+counter))
-          Thread.sleep(200L)
+          counter += 1
+          Thread.sleep(1000L)
         }
         logger.debug("Writing Web Socket End Frame")
         channel.writeAndFlush( new CloseWebSocketFrame())

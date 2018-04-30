@@ -66,6 +66,7 @@ object HttpRouter extends App {
       logger.info("Http Router started")
       // Wait until the server socket is closed.
       f.channel.closeFuture.sync
+      logger.info("Http Router closed")
     } finally {
       logger.info("Http Router shutdown started")
       // Shut down all event loops to terminate all threads.
