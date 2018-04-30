@@ -36,10 +36,6 @@ public class HttpEventSubscription  {
                                 }
                             });
 
-//                                ws.frameHandler( frame -> {
-//                                   System.out.println("Frame is :" + frame.textData());
-//                                });
-//                            });
                         } catch (Exception exp) {
                             logger.error("Websocket failed", exp);
                         }
@@ -52,7 +48,7 @@ public class HttpEventSubscription  {
 
     public void close()  {
         client.close();
-        // drain and stop the dispatcher.
+        // Todo - drain and stop the dispatcher.
         logger.info("Event subscription closed");
     }
 

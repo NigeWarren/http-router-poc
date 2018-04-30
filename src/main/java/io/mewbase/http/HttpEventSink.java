@@ -19,7 +19,6 @@ public class HttpEventSink  {
     // route uri for publishing events
     public final static String publishRoute = "publish";
 
-
     private final long syncWriteTimeOut = 10;
 
     private final HttpClient client;
